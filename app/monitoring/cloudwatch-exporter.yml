@@ -1,0 +1,59 @@
+region: ${AWS_REGION}
+
+metrics:
+  - aws_namespace: AWS/ECS
+    aws_metric_name: CPUUtilization
+    aws_dimensions:
+      - ClusterName
+      - ServiceName
+    period_seconds: 300
+    range_seconds: 600
+    statistics:
+      - Average
+
+  - aws_namespace: AWS/ECS
+    aws_metric_name: MemoryUtilization
+    aws_dimensions:
+      - ClusterName
+      - ServiceName
+    period_seconds: 300
+    range_seconds: 600
+    statistics:
+      - Average
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: RequestCount
+    aws_dimensions:
+      - LoadBalancer
+    period_seconds: 300
+    range_seconds: 600
+    statistics:
+      - Sum
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: ActiveConnectionCount
+    aws_dimensions:
+      - LoadBalancer
+    period_seconds: 300
+    range_seconds: 600
+    statistics:
+      - Sum
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: HTTPCode_ELB_5XX_Count
+    aws_dimensions:
+      - LoadBalancer
+    period_seconds: 300
+    range_seconds: 600
+    statistics:
+      - Sum
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: HealthyHostCount
+    aws_dimensions:
+      - LoadBalancer
+      - TargetGroup
+    period_seconds: 300
+    range_seconds: 600
+    statistics:
+      - Average
