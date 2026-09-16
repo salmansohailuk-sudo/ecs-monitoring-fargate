@@ -14,10 +14,3 @@ resource "aws_ecr_repository" "app" {
     Description = "Container repository for the ECS-FrontEnd-Backend-Monitoring-Demo ${each.key} service."
   }
 }
-
-output "ecr_repository_urls" {
-  value = {
-    for name, repository in aws_ecr_repository.app :
-    name => repository.repository_url
-  }
-}
