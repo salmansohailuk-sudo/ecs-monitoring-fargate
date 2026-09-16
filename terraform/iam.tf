@@ -12,8 +12,13 @@ data "aws_iam_policy_document" "ecs_task_assume_role" {
 }
 
 resource "aws_iam_role" "ecs_execution" {
-  name               = "${var.project_name}-${var.environment}-execution"
+  name               = "${var.resource_prefix}-${var.environment}-ecs-execution"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
+
+  tags = {
+    Name        = "${var.project_name} ECS execution role"
+    Description = "Execution role for ECS-FrontEnd-Backend-Monitoring-Demo Fargate tasks."
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_execution" {
@@ -21,9 +26,24 @@ resource "aws_iam_role_policy_attachment" "ecs_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-resource "aws_iam_role" "monitoring_task" {
-  name               = "${var.project_name}-${var.environment}-monitoring-task"
+resource "aws_iam_role" "app_task" {
+  name               = "${var.resource_prefix}-${var.environment}-app-task"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
+
+  tags = {
+    Name        = "${var.project_name} application task role"
+    Description = "Application task role for ECS-FrontEnd-Backend-Monitoring-Demo."
+  }
+}
+
+resource "aws_iam_role" "monitoring_task" {
+  name               = "${var.resource_prefix}-${var.environment}-monitoring-task"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
+
+  tags = {
+    Name        = "${var.project_name} monitoring task role"
+    Description = "CloudWatch read role for ECS-FrontEnd-Backend-Monitoring-Demo."
+  }
 }
 
 resource "aws_iam_role_policy" "monitoring_cloudwatch_read" {
@@ -42,9 +62,4 @@ resource "aws_iam_role_policy" "monitoring_cloudwatch_read" {
       Resource = "*"
     }]
   })
-}
-
-resource "aws_iam_role" "app_task" {
-  name               = "${var.project_name}-${var.environment}-app-task"
-  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
 }

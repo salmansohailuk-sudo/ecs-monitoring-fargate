@@ -1,13 +1,19 @@
 variable "aws_region" {
   type        = string
-  description = "AWS region for the deployment."
+  description = "AWS region for the demo."
   default     = "us-east-1"
 }
 
 variable "project_name" {
   type        = string
-  description = "Short project name used in resource names."
-  default     = "ecommerce-monitoring"
+  description = "Project display name."
+  default     = "ECS-FrontEnd-Backend-Monitoring-Demo"
+}
+
+variable "resource_prefix" {
+  type        = string
+  description = "Lowercase AWS-safe prefix."
+  default     = "ecs-frontend-backend-monitoring-demo"
 }
 
 variable "environment" {
@@ -18,24 +24,18 @@ variable "environment" {
 
 variable "vpc_cidr" {
   type        = string
-  description = "CIDR range for the new VPC."
+  description = "VPC CIDR range."
   default     = "10.50.0.0/16"
 }
 
 variable "availability_zones" {
   type        = list(string)
-  description = "Two Availability Zones in the selected region."
-  default     = ["us-east-2a", "us-east-2b"]
+  description = "Availability Zones for the VPC."
+  default     = ["us-east-1a", "us-east-1b"]
 }
 
 variable "image_tag" {
   type        = string
-  description = "ECR tag used by ECS task definitions."
+  description = "Image tag deployed to ECS."
   default     = "latest"
-}
-
-variable "github_repository" {
-  type        = string
-  description = "GitHub repository in owner/repository form."
-  default     = "ecs-monitoring-fargate"
 }

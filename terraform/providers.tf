@@ -1,10 +1,13 @@
-terraform {
-  required_version = ">= 1.6.0"
+provider "aws" {
+  region = var.aws_region
 
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 6.0"
+  default_tags {
+    tags = {
+      Project     = var.project_name
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+      Description = "ECS-FrontEnd-Backend-Monitoring-Demo sandbox deployment"
+      AWSRegion   = var.aws_region
     }
   }
 }

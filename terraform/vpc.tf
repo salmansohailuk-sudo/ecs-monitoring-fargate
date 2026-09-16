@@ -1,18 +1,11 @@
-data "aws_availability_zones" "available" {
-  state = "available"
-}
-
-locals {
-  azs = var.availability_zones
-}
-
 resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
 
   tags = {
-    Name = "${var.project_name}-${var.environment}-vpc"
+    Name        = "${var.resource_prefix}-${var.environment}-vpc"
+    Description = "New VPC for ECS-FrontEnd-Backend-Monitoring-Demo."
   }
 }
 
@@ -20,13 +13,14 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "${var.project_name}-${var.environment}-igw"
+    Name        = "${var.resource_prefix}-${var.environment}-igw"
+    Description = "Internet gateway for ECS-FrontEnd-Backend-Monitoring-Demo."
   }
 }
 
 resource "aws_subnet" "public" {
   for_each = {
-    for index, az in local.azs : az => index
+    for index, az in var.availability_zones : az => index
   }
 
   vpc_id                  = aws_vpc.main.id
@@ -35,14 +29,15 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "${var.project_name}-${var.environment}-public-${each.key}"
-    Tier = "public"
+    Name        = "${var.resource_prefix}-${var.environment}-public-${each.key}"
+    Tier        = "public"
+    Description = "Public subnet for the demo ALB."
   }
 }
 
 resource "aws_subnet" "private" {
   for_each = {
-    for index, az in local.azs : az => index
+    for index, az in var.availability_zones : az => index
   }
 
   vpc_id            = aws_vpc.main.id
@@ -50,8 +45,9 @@ resource "aws_subnet" "private" {
   cidr_block        = cidrsubnet(var.vpc_cidr, 8, each.value + 10)
 
   tags = {
-    Name = "${var.project_name}-${var.environment}-private-${each.key}"
-    Tier = "private"
+    Name        = "${var.resource_prefix}-${var.environment}-private-${each.key}"
+    Tier        = "private"
+    Description = "Private Fargate subnet for the demo services."
   }
 }
 
@@ -64,7 +60,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "${var.project_name}-${var.environment}-public-rt"
+    Name = "${var.resource_prefix}-${var.environment}-public-rt"
   }
 }
 
@@ -79,7 +75,7 @@ resource "aws_eip" "nat" {
   domain = "vpc"
 
   tags = {
-    Name = "${var.project_name}-${var.environment}-nat-eip"
+    Name = "${var.resource_prefix}-${var.environment}-nat-eip"
   }
 }
 
@@ -90,7 +86,7 @@ resource "aws_nat_gateway" "main" {
   depends_on = [aws_internet_gateway.main]
 
   tags = {
-    Name = "${var.project_name}-${var.environment}-nat"
+    Name = "${var.resource_prefix}-${var.environment}-nat"
   }
 }
 
@@ -105,7 +101,7 @@ resource "aws_route_table" "private" {
   }
 
   tags = {
-    Name = "${var.project_name}-${var.environment}-private-rt-${each.key}"
+    Name = "${var.resource_prefix}-${var.environment}-private-rt-${each.key}"
   }
 }
 

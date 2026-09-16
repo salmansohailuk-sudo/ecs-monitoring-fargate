@@ -5,6 +5,6 @@ datasources:
     uid: prometheus
     type: prometheus
     access: proxy
-    url: http://prometheus.ecs-test.local:9090
+    url: http://monitoring.ecs-test.local:9090
     isDefault: true
     editable: false

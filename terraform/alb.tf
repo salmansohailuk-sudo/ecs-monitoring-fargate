@@ -1,13 +1,18 @@
 resource "aws_lb" "main" {
-  name               = substr("${var.project_name}-${var.environment}", 0, 32)
+  name               = substr("${var.resource_prefix}-${var.environment}", 0, 32)
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
   subnets            = values(aws_subnet.public)[*].id
+
+  tags = {
+    Name        = "${var.project_name} public ALB"
+    Description = "Public ALB for the ECS-FrontEnd-Backend-Monitoring-Demo frontend."
+  }
 }
 
 resource "aws_lb_target_group" "frontend" {
-  name        = substr("${var.project_name}-${var.environment}-fe", 0, 32)
+  name        = substr("${var.resource_prefix}-${var.environment}-frontend", 0, 32)
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -23,6 +28,11 @@ resource "aws_lb_target_group" "frontend" {
     healthy_threshold   = 2
     unhealthy_threshold = 3
   }
+
+  tags = {
+    Name        = "${var.project_name} frontend target group"
+    Description = "ALB target group for the ECS-FrontEnd-Backend-Monitoring-Demo frontend."
+  }
 }
 
 resource "aws_lb_listener" "http" {
@@ -31,15 +41,12 @@ resource "aws_lb_listener" "http" {
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
+    type = "forward"
+
     forward {
       target_group {
         arn = aws_lb_target_group.frontend.arn
       }
     }
   }
-}
-
-output "alb_dns_name" {
-  value = aws_lb.main.dns_name
 }

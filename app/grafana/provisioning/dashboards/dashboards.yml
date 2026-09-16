@@ -1,9 +1,9 @@
 apiVersion: 1
 
 providers:
-  - name: ecommerce-monitoring
+  - name: ECS-FrontEnd-Backend-Monitoring-Demo
     orgId: 1
-    folder: E-Commerce Monitoring
+    folder: ECS-FrontEnd-Backend-Monitoring-Demo
     type: file
     disableDeletion: true
     updateIntervalSeconds: 30

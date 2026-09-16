@@ -1,10 +1,10 @@
 resource "aws_security_group" "alb" {
-  name        = "${var.project_name}-${var.environment}-alb"
-  description = "Public access to the Application Load Balancer."
+  name        = "${var.resource_prefix}-${var.environment}-alb"
+  description = "Public ALB security group for ECS-FrontEnd-Backend-Monitoring-Demo."
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description = "HTTP from the internet"
+    description = "HTTP access to the frontend."
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -12,7 +12,7 @@ resource "aws_security_group" "alb" {
   }
 
   egress {
-    description = "ALB outbound traffic"
+    description = "ALB outbound traffic."
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -21,12 +21,12 @@ resource "aws_security_group" "alb" {
 }
 
 resource "aws_security_group" "ecs" {
-  name        = "${var.project_name}-${var.environment}-ecs"
-  description = "Private ECS service communication."
+  name        = "${var.resource_prefix}-${var.environment}-ecs"
+  description = "Private ECS service security group for ECS-FrontEnd-Backend-Monitoring-Demo."
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description     = "ALB to frontend"
+    description     = "ALB to frontend Nginx."
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
@@ -34,7 +34,7 @@ resource "aws_security_group" "ecs" {
   }
 
   ingress {
-    description = "Frontend to backend"
+    description = "Frontend to backend."
     from_port   = 5000
     to_port     = 5000
     protocol    = "tcp"
@@ -42,7 +42,7 @@ resource "aws_security_group" "ecs" {
   }
 
   ingress {
-    description = "Monitoring scrape ports"
+    description = "Prometheus to Nginx exporter."
     from_port   = 9113
     to_port     = 9113
     protocol    = "tcp"
@@ -50,7 +50,7 @@ resource "aws_security_group" "ecs" {
   }
 
   ingress {
-    description = "Prometheus and Grafana internal communication"
+    description = "Grafana and Prometheus internal traffic."
     from_port   = 3000
     to_port     = 9090
     protocol    = "tcp"
@@ -58,7 +58,7 @@ resource "aws_security_group" "ecs" {
   }
 
   egress {
-    description = "Private tasks outbound traffic"
+    description = "Fargate task outbound traffic through NAT."
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
