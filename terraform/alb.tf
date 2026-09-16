@@ -1,5 +1,7 @@
 resource "aws_lb" "main" {
-  name               = substr("${var.resource_prefix}-${var.environment}", 0, 32)
+  # AWS ALB names must be 32 characters or fewer
+  # and cannot end with a hyphen.
+  name               = "ecs-febm-demo-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
@@ -12,7 +14,8 @@ resource "aws_lb" "main" {
 }
 
 resource "aws_lb_target_group" "frontend" {
-  name        = substr("${var.resource_prefix}-${var.environment}-frontend", 0, 32)
+  # This name is also under AWS's 32-character limit.
+  name        = "ecs-febm-demo-fe-tg"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
