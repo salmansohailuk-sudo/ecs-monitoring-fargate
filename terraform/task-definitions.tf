@@ -3,6 +3,8 @@ locals {
     for name, repository in aws_ecr_repository.app :
     name => repository.repository_url
   }
+
+  alb_base_url = "http://${aws_lb.main.dns_name}"
 }
 
 resource "aws_ecs_task_definition" "frontend" {
@@ -215,11 +217,19 @@ resource "aws_ecs_task_definition" "grafana" {
         },
         {
           name  = "GF_SERVER_ROOT_URL"
-          value = "http://ecs-febm-demo-alb-712640412.us-east-1.elb.amazonaws.com/grafana/"
+          value = "${local.alb_base_url}/grafana/"
         },
         {
           name  = "GF_SERVER_SERVE_FROM_SUB_PATH"
           value = "true"
+        },
+        {
+          name  = "GF_SERVER_DOMAIN"
+          value = aws_lb.main.dns_name
+        },
+        {
+          name  = "GF_SERVER_PROTOCOL"
+          value = "http"
         }
       ]
 
