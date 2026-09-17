@@ -172,11 +172,11 @@ resource "aws_ecs_task_definition" "grafana" {
       environment = [
         {
           name  = "GF_SECURITY_ADMIN_USER"
-          value = "admin"
+          value = "lokesh"
         },
         {
           name  = "GF_SECURITY_ADMIN_PASSWORD"
-          value = "CHANGE_ME_BEFORE_DEPLOYMENT"
+          value = "faisal"
         }
       ]
 
