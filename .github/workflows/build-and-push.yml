@@ -1,0 +1,78 @@
+name: ECS-FrontEnd-Backend-Monitoring-Demo - Build and Push
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  ECR_PROJECT_PREFIX: ecs-frontend-backend-monitoring-demo
+
+jobs:
+  build-and-push:
+    name: Build and push four images
+    runs-on: ubuntu-latest
+
+    steps:
+      # Download the project files to the GitHub-hosted runner.
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Authenticate to AWS using the GitHub repository secrets.
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      # Authenticate Docker to Amazon ECR.
+      - name: Log in to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Build and push the frontend image as latest.
+      - name: Build and push frontend
+        run: |
+          docker build \
+            -t "${{ steps.ecr-login.outputs.registry }}/${ECR_PROJECT_PREFIX}/frontend:latest" \
+            ./app/frontend
+
+          docker push \
+            "${{ steps.ecr-login.outputs.registry }}/${ECR_PROJECT_PREFIX}/frontend:latest"
+
+      # Build and push the backend image as latest.
+      - name: Build and push backend
+        run: |
+          docker build \
+            -t "${{ steps.ecr-login.outputs.registry }}/${ECR_PROJECT_PREFIX}/backend:latest" \
+            ./app/backend
+
+          docker push \
+            "${{ steps.ecr-login.outputs.registry }}/${ECR_PROJECT_PREFIX}/backend:latest"
+
+      # Build and push the monitoring image as latest.
+      - name: Build and push monitoring
+        run: |
+          docker build \
+            -t "${{ steps.ecr-login.outputs.registry }}/${ECR_PROJECT_PREFIX}/monitoring:latest" \
+            ./app/monitoring
+
+          docker push \
+            "${{ steps.ecr-login.outputs.registry }}/${ECR_PROJECT_PREFIX}/monitoring:latest"
+
+      # Build and push the Grafana image as latest.
+      - name: Build and push Grafana
+        run: |
+          docker build \
+            -t "${{ steps.ecr-login.outputs.registry }}/${ECR_PROJECT_PREFIX}/grafana:latest" \
+            ./app/grafana
+
+          docker push \
+            "${{ steps.ecr-login.outputs.registry }}/${ECR_PROJECT_PREFIX}/grafana:latest"
+
+      # Simple confirmation in the Actions log.
+      - name: Confirm completion
+        run: |
+          echo "All four latest images were built and pushed successfully."
