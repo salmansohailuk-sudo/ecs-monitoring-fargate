@@ -73,7 +73,14 @@ resource "aws_ecs_service" "monitoring" {
     registry_arn = aws_service_discovery_service.monitoring.arn
   }
 
+  load_balancer {
+    target_group_arn = aws_lb_target_group.prometheus.arn
+    container_name   = "monitoring"
+    container_port   = 9090
+  }
+
   depends_on = [
+    aws_lb_listener.http,
     aws_service_discovery_service.monitoring
   ]
 }
@@ -95,7 +102,14 @@ resource "aws_ecs_service" "grafana" {
     registry_arn = aws_service_discovery_service.grafana.arn
   }
 
+  load_balancer {
+    target_group_arn = aws_lb_target_group.grafana.arn
+    container_name   = "grafana"
+    container_port   = 3000
+  }
+
   depends_on = [
+    aws_lb_listener.http,
     aws_service_discovery_service.grafana
   ]
 }
