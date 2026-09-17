@@ -43,6 +43,7 @@ resource "aws_ecs_task_definition" "frontend" {
 
       logConfiguration = {
         logDriver = "awslogs"
+
         options = {
           awslogs-group         = aws_cloudwatch_log_group.ecs["frontend"].name
           awslogs-region        = var.aws_region
@@ -68,16 +69,26 @@ resource "aws_ecs_task_definition" "backend" {
       image     = "${local.ecr_urls.backend}:${var.image_tag}"
       essential = true
 
-      portMappings = [{
-        containerPort = 5000
-        hostPort      = 5000
-        protocol      = "tcp"
-      }]
+      portMappings = [
+        {
+          containerPort = 5000
+          hostPort      = 5000
+          protocol      = "tcp"
+        }
+      ]
 
       environment = [
         {
           name  = "PORT"
           value = "5000"
+        },
+        {
+          name  = "STRIPE_SECRET_KEY"
+          value = var.stripe_secret_key
+        },
+        {
+          name  = "STRIPE_WEBHOOK_SECRET"
+          value = var.stripe_webhook_secret
         }
       ]
 
@@ -91,6 +102,7 @@ resource "aws_ecs_task_definition" "backend" {
 
       logConfiguration = {
         logDriver = "awslogs"
+
         options = {
           awslogs-group         = aws_cloudwatch_log_group.ecs["backend"].name
           awslogs-region        = var.aws_region
@@ -138,6 +150,7 @@ resource "aws_ecs_task_definition" "monitoring" {
 
       logConfiguration = {
         logDriver = "awslogs"
+
         options = {
           awslogs-group         = aws_cloudwatch_log_group.ecs["monitoring"].name
           awslogs-region        = var.aws_region
@@ -163,11 +176,13 @@ resource "aws_ecs_task_definition" "grafana" {
       image     = "${local.ecr_urls.grafana}:${var.image_tag}"
       essential = true
 
-      portMappings = [{
-        containerPort = 3000
-        hostPort      = 3000
-        protocol      = "tcp"
-      }]
+      portMappings = [
+        {
+          containerPort = 3000
+          hostPort      = 3000
+          protocol      = "tcp"
+        }
+      ]
 
       environment = [
         {
@@ -182,6 +197,7 @@ resource "aws_ecs_task_definition" "grafana" {
 
       logConfiguration = {
         logDriver = "awslogs"
+
         options = {
           awslogs-group         = aws_cloudwatch_log_group.ecs["grafana"].name
           awslogs-region        = var.aws_region
