@@ -1,16 +1,16 @@
 resource "aws_db_subnet_group" "mysql" {
   name       = "${var.resource_prefix}-${var.environment}-mysql"
-  subnet_ids = values(aws_subnet.private)[*].id
+  subnet_ids = values(aws_subnet.public)[*].id
 
   tags = {
-    Name        = "ecs-febm-demo-mysql-subnet-group"
-    Description = "Private subnets for ECS MySQL database"
+    Name        = "ECS FEBM MySQL subnet group"
+    Description = "Temporary public MySQL subnet group"
   }
 }
 
 resource "aws_security_group" "rds" {
   name        = "${var.resource_prefix}-${var.environment}-rds"
-  description = "MySQL access from ECS tasks only"
+  description = "Temporary MySQL access for ECS and laptop"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -19,6 +19,14 @@ resource "aws_security_group" "rds" {
     from_port       = 3306
     to_port         = 3306
     security_groups = [aws_security_group.ecs.id]
+  }
+
+  ingress {
+    description = "MySQL from laptop"
+    protocol    = "tcp"
+    from_port   = 3306
+    to_port     = 3306
+    cidr_blocks = ["86.26.15.62/32"]
   }
 
   egress {
@@ -30,8 +38,8 @@ resource "aws_security_group" "rds" {
   }
 
   tags = {
-    Name        = "ecs-febm-demo-rds-security-group"
-    Description = "Security group for ECS MySQL database"
+    Name        = "ECS FEBM RDS security group"
+    Description = "Temporary public MySQL security group"
   }
 }
 
@@ -55,15 +63,15 @@ resource "aws_db_instance" "mysql" {
   db_subnet_group_name   = aws_db_subnet_group.mysql.name
   vpc_security_group_ids = [aws_security_group.rds.id]
 
-  publicly_accessible     = false
+  publicly_accessible     = true
   multi_az                = false
   backup_retention_period = 0
-  skip_final_snapshot     = true
+  skip_final_snapshot     = false
   deletion_protection     = false
   apply_immediately       = true
 
   tags = {
-    Name        = "ecs-febm-demo-mysql"
-    Description = "MySQL database for ECS application"
+    Name        = "ECS FEBM MySQL database"
+    Description = "Temporary public MySQL database"
   }
 }

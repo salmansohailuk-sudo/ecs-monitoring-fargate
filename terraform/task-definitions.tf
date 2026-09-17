@@ -212,6 +212,14 @@ resource "aws_ecs_task_definition" "grafana" {
         {
           name  = "GF_SECURITY_ADMIN_PASSWORD"
           value = "faisal"
+        },
+        {
+          name  = "GF_SERVER_ROOT_URL"
+          value = "http://ecs-febm-demo-alb-712640412.us-east-1.elb.amazonaws.com/grafana/"
+        },
+        {
+          name  = "GF_SERVER_SERVE_FROM_SUB_PATH"
+          value = "true"
         }
       ]
 
