@@ -89,6 +89,26 @@ resource "aws_ecs_task_definition" "backend" {
         {
           name  = "STRIPE_WEBHOOK_SECRET"
           value = var.stripe_webhook_secret
+        },
+        {
+          name  = "DB_HOST"
+          value = aws_db_instance.mysql.address
+        },
+        {
+          name  = "DB_PORT"
+          value = "3306"
+        },
+        {
+          name  = "DB_NAME"
+          value = var.db_name
+        },
+        {
+          name  = "DB_USER"
+          value = var.db_username
+        },
+        {
+          name  = "DB_PASSWORD"
+          value = var.db_password
         }
       ]
 

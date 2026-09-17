@@ -51,3 +51,21 @@ variable "stripe_webhook_secret" {
   description = "Temporary Stripe webhook signing secret for the ECS backend."
   sensitive   = true
 }
+
+variable "db_name" {
+  type        = string
+  description = "Application MySQL database name."
+  default     = "ecommerce"
+}
+
+variable "db_username" {
+  type        = string
+  description = "Application MySQL username."
+  sensitive   = true
+}
+
+variable "db_password" {
+  type        = string
+  description = "Application MySQL password."
+  sensitive   = true
+}
